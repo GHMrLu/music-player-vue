@@ -1,29 +1,67 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+    <!-- {{router}} -->
+    <music-header :routes="routes"/>
+    <transition :name="transitionName">
+      <router-view class="content"/>
+    </transition>
   </div>
 </template>
 
+<script>
+import MusicHeader from './components/MusicHeader.vue';
+
+export default {
+  data() {
+    return {
+      transitionName: '',
+    };
+  },
+  computed: {
+    routes() {
+      return this.$router.options.routes;
+    },
+  },
+  components: {
+    MusicHeader,
+  },
+  watch: {
+    $route(to, from) {
+      const toIndex = this.routes.findIndex(e => to.path === e.path);
+      const fromIndex = this.routes.findIndex(e => from.path === e.path);
+      this.transitionName = toIndex < fromIndex ? 'slide-right' : 'slide-left';
+      console.log(this.$router.options.routes);
+    },
+  },
+};
+</script>
+
+
 <style lang="less">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+body {
+  padding: 0px;
+  margin: 0px;
 }
-#nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+
+.content {
+  width: 100%;
+  position: absolute;
+}
+
+.slide-right-enter-active,
+.slide-right-leave-active,
+.slide-left-enter-active,
+.slide-left-leave-active {
+  transition: all 1s ease;
+}
+
+.slide-left-enter,
+.slide-right-leave-to {
+  transform: translateX(100%);
+}
+
+.slide-left-leave-to,
+.slide-right-enter {
+  transform: translateX(-100%);
 }
 </style>

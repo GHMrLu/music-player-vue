@@ -1,6 +1,10 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Home from './views/Home.vue';
+
+// 导入页面
+import Mine from './views/Mine.vue';
+import Find from './views/Find.vue';
+import Video from './views/Video.vue';
 
 Vue.use(Router);
 
@@ -9,17 +13,19 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: Home,
+      path: '/mine',
+      name: '我的',
+      component: Mine,
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
+      path: '/find',
+      name: '发现',
+      component: Find,
+    },
+    {
+      path: '/video',
+      name: '视频',
+      component: Video,
     },
   ],
 });

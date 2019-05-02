@@ -1,0 +1,15 @@
+//全局变量
+@header-height: 45px;
+
+.singline-text() {
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+}
+
+.multiline-text(@lines) {
+    display           : -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: @lines;
+    overflow          : hidden;
+}

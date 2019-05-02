@@ -1,0 +1,232 @@
+.playlist {
+    width         : 100%;
+    height        : 100%;
+    @index-width  : 48px;
+    @avatar-radius: 13px;
+    @cover-width  : 120px;
+
+    .title {
+        height     : @header-height;
+        position   : fixed;
+        top        : 0px;
+        width      : 100%;
+        box-sizing : border-box;
+        padding    : 10px;
+        color      : #fff;
+        display    : flex;
+        align-items: center;
+        z-index    : 2;
+
+        .icon {
+            font-size   : 24px;
+            margin-right: 10px;
+        }
+
+        .text {
+            .singline-text();
+            font-size: 19px;
+        }
+
+        .background {
+            position        : absolute;
+            width           : 100%;
+            height          : 100%;
+            z-index         : -2;
+            left            : 0px;
+            background-color: #fff;
+            overflow        : hidden;
+            top             : 0px;
+            opacity         : 0;
+
+            img {
+                width   : 100%;
+                filter  : blur(50px);
+                top     : -140px;
+                position: absolute;
+            }
+        }
+    }
+
+    .scroll-wrapper {
+        height: 100%;
+        width : 100%;
+
+    }
+
+    .bg-wrapper-fixed {
+        position: fixed;
+        top     : -140px;
+        z-index : 1;
+    }
+
+    .bg-wrapper {
+        width      : 100%;
+        padding-top: 45px;
+        position   : relative;
+        overflow   : hidden;
+
+        .background {
+            position: absolute;
+            width   : 100%;
+            height  : 100%;
+            z-index : -1;
+            background-color: #fff;
+            overflow        : hidden;
+            top             : 0px;
+            left            : 0px;
+            img {
+                width   : 100%;
+                filter  : blur(50px);
+                top     : 0px;
+                position: absolute;
+            }
+        }
+
+        .pl-info {
+            display        : flex;
+            justify-content: space-between;
+            box-sizing     : border-box;
+            padding        : 10px 10px 10px 10px;
+
+            .info-left {
+                position   : relative;
+                width      : @cover-width;
+                height     : @cover-width;
+                flex-shrink: 0;
+
+                .playcount {
+                    position : absolute;
+                    top      : 10px;
+                    right    : 10px;
+                    color    : #fff;
+                    font-size: 12px;
+                }
+
+                .cover {
+                    border-radius: 5px;
+                    width        : 100%;
+                    min-height   : 100%;
+                }
+            }
+
+            .info-right {
+                padding-left   : 15px;
+                display        : flex;
+                flex-direction : column;
+                justify-content: space-between;
+                width          : calc(100% - @cover-width);
+
+                .name {
+                    font-size: 17px;
+                    color    : #fff;
+                    .multiline-text(2);
+                    margin-bottom: 10px;
+                }
+
+                .creator {
+                    display    : flex;
+                    color      : #fff;
+                    align-items: center;
+
+                    .avatar {
+                        height       : @avatar-radius * 2;
+                        min-width    : @avatar-radius * 2;
+                        border-radius: @avatar-radius;
+                        margin-right : 10px;
+                    }
+
+                    .nickname {
+                        font-size: 12px;
+                        color    : #dfd6d7;
+                        .multiline-text(1);
+                    }
+                }
+
+                .description {
+                    font-size: 14px;
+                    color    : #dfd6d7;
+                    .multiline-text(2);
+                }
+            }
+        }
+
+        .pl-actions {
+            width           : 100%;
+            display         : flex;
+            justify-content : space-between;
+            align-items     : center;
+            padding         : 5px 0px 5px 0px;
+            border-radius   : 17px 17px 0px 0px;
+            background-color: #fff;
+
+            .playall {
+                display    : flex;
+                align-items: center;
+                font-size  : 18px;
+
+                .play-icon-wrapper {
+                    width          : 48px;
+                    display        : flex;
+                    justify-content: center;
+                }
+
+                .musicplayericon {
+                    font-size: 20px;
+                }
+
+                .trackCount {
+                    font-size: 15px;
+                    color    : #dfd6d7;
+                }
+            }
+
+            .collect {
+                font-size       : 13px;
+                background-color: #ff3a3a;
+                border-radius   : 17px;
+                padding         : 10px;
+                color           : #fff;
+                margin-right    : 5px;
+            }
+        }
+    }
+
+
+    .pl-songs {
+        background-color: #fff;
+
+        .song {
+            display    : flex;
+            align-items: center;
+            padding    : 10px 10px 10px 0px;
+
+            .index-wrapper {
+                width: 48px;
+            }
+
+            .index {
+                display        : flex;
+                width          : 48px;
+                justify-content: center;
+            }
+
+            .song-info {
+                display       : flex;
+                flex-direction: column;
+                width         : calc(100% - @index-width);
+
+                .name {
+                    font-size: 16px;
+                    .singline-text();
+                    margin-bottom: 3px;
+                }
+
+                .artistsname {
+                    font-size: 12px;
+                    color    : #dfd6d7;
+                    .singline-text();
+                }
+            }
+        }
+    }
+}

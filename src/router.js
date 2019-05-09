@@ -7,7 +7,7 @@ import Mine from './views/Mine.vue';
 import Find from './views/Find.vue';
 import Video from './views/Video.vue';
 import playlist from './views/playlist.vue';
-// import pl from './views/pl.vue';
+import player from './views/player.vue';
 
 Vue.use(Router);
 
@@ -41,6 +41,12 @@ export default new Router({
       path: '/playlist',
       name: '歌单',
       component: playlist,
+      props: route => ({ id: route.query.id }),
+    },
+    {
+      path: '/player',
+      name: '播放器',
+      component: player,
       props: route => ({ id: route.query.id }),
     },
   ],

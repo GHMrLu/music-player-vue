@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 axios.defaults.timeout = 5000; // 默认5s超时
-axios.defaults.baseURL = 'http://192.168.199.127:3000/';
+axios.defaults.baseURL = 'http://localhost:3000/';
 
 export default {
   banner() {
@@ -19,6 +19,20 @@ export default {
     return axios('/playlist/detail', {
       params: {
         id,
+      },
+    });
+  },
+  songsDetail(ids) {
+    return axios('/song/detail', {
+      params: {
+        ids,
+      },
+    });
+  },
+  songsUrl(ids) {
+    return axios('/song/url', {
+      params: {
+        id: ids,
       },
     });
   },

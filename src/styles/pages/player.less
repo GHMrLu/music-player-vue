@@ -1,0 +1,160 @@
+.player {
+    height: 100%;
+    width : 100%;
+
+    .background {
+        position           : absolute;
+        width              : 100%;
+        height             : 100%;
+        z-index            : -2;
+        left               : 0px;
+        top                : 0px;
+        filter             : blur(50px);
+        background-size    : cover;
+        background-position: center;
+    }
+
+    .title {
+        height     : 45px;
+        width      : 100%;
+        box-sizing : border-box;
+        padding    : 10px;
+        color      : #fff;
+        display    : flex;
+        align-items: center;
+
+        .icon {
+            font-size   : 24px;
+            margin-right: 10px;
+        }
+
+        .text {
+            //.singline-text();
+            font-size: 19px;
+        }
+    }
+
+    .play-panel {
+        width          : 100%;
+        display        : flex;
+        flex-direction : column;
+        justify-content: center;
+        align-items    : center;
+        position       : relative;
+        overflow       : hidden;
+        padding-top    : 64px;
+
+        .needle {
+            transform       : translate(20px, -15px) rotate(-30deg);
+            transform-origin: 20px 30px;
+            position        : absolute;
+            z-index         : 1;
+            top             : 0px;
+            width           : 80px;
+            transition      : transform 1s ease-in-out;
+            rotate          : -30deg;
+        }
+
+
+        .disk {
+            position       : relative;
+            width          : 260px;
+            animation      : rotate-disk 20s infinite normal linear;
+            display        : flex;
+            justify-content: center;
+            align-items    : center;
+
+            .album {
+                position: absolute;
+                width   : 65%;
+                z-index : -1;
+            }
+
+            .disk-border {
+                width: 100%;
+            }
+
+            @keyframes rotate-disk {
+                100% {
+                    transform: rotateZ(360deg);
+                }
+            }
+        }
+    }
+
+    .footer {
+        position       : absolute;
+        bottom         : 15px;
+        width          : 100%;
+        display        : flex;
+        flex-direction : column;
+        justify-content: center;
+        align-items    : center;
+
+        .process {
+            display        : flex;
+            width          : 100%;
+            justify-content: space-between;
+            align-items    : center;
+            box-sizing     : border-box;
+            padding        : 10px;
+
+            .time {
+                color    : #857675;
+                font-size: 12px;
+            }
+
+            .process-bar {
+                @process-bar-height: 9px; //奇数
+                width              : 100%;
+                height             : @process-bar-height;
+                border-radius      : @process-bar-height;
+                background-color   : #857675;
+                position           : relative;
+                margin             : 0px 20px;
+
+                .cur {
+                    position        : absolute;
+                    left            : 0px;
+                    border-radius   : inherit;
+                    height          : 100%;
+                    background-color: #fff;
+
+                    .process-dot {
+                        @process-dot-height: @process-bar-height+8px;
+                        position           : absolute;
+                        right              : -(@process-dot-height - 1)/2;
+                        top                : -(@process-bar-height - 1)/2;
+                        height             : @process-bar-height + 8px;
+                    }
+                }
+
+            }
+
+
+        }
+
+        .control {
+            display        : flex;
+            justify-content: space-between;
+            align-items    : center;
+
+            img {
+                width : 30px;
+                margin: 0px 10px;
+
+                &.play-btn,
+                &.pause-btn {
+                    width: 50px;
+                }
+
+
+            }
+
+
+        }
+
+
+
+    }
+}

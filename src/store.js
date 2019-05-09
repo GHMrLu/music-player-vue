@@ -7,16 +7,12 @@ Vue.use(Vuex);
 // mutation types
 const SET_FIND = 'SET_FIND';
 const SET_PLAYLIST = 'SET_PLAYLIST';
+const INIT_SONG = 'INIT_SONG';
+const UPDATE_SONG = 'UPDATE_SONG';
 
 export default new Vuex.Store({
   state: {
-    currentSong: {
-      url: 'http://m10.music.126.net/20190422162145/a8e24c4741c62c5c0dbfb04ff2bc82c9/ymusic/0fd6/4f65/43ed/a8772889f38dfcb91c04da915b301617.mp3',
-      name: '',
-      cover: '',
-      artists: [],
-      album: {},
-    },
+    currentSong: {},
     palylist: {
       playType: '',
       songs: [],
@@ -33,6 +29,17 @@ export default new Vuex.Store({
     [SET_PLAYLIST](state, data) {
       state.palylist = data;
     },
+    [INIT_SONG](state, data) {
+      const currentSong = {
+        isPlay: false,
+        duration: 0,
+        currentTime: 0,
+      };
+      state.currentSong = { ...currentSong, ...data };
+    },
+    [UPDATE_SONG](state, data) {
+      state.currentSong = { ...state.currentSong, ...data };
+    },
   },
   actions: {
     find({ commit }) {
@@ -48,6 +55,14 @@ export default new Vuex.Store({
     playlist({ commit }, id) {
       api.playlistDetail(id).then((res) => {
         commit(SET_PLAYLIST, res.data);
+      });
+    },
+    currentSongDetail({ commit, state }, id) {
+      Promise.all([api.songsDetail(id), api.songsUrl(id)]).then(([songsDetail, songsUrl]) => {
+        const [part1] = songsDetail.data.songs;
+        const [part2] = songsUrl.data.data;
+        const currentSong = { ...state.currentSong, ...part1, ...part2 };
+        commit(INIT_SONG, currentSong);
       });
     },
   },

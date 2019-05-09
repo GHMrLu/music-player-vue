@@ -4,7 +4,7 @@
       <div class="background" :style="{opacity:titleBackgroundOpactity}">
         <img :src="playlist.coverImgUrl">
       </div>
-      <span class="musicplayericon musicplayericon-leftarrow icon"></span>
+      <span class="musicplayericon musicplayericon-leftarrow icon" @click="back"></span>
       <div class="text">{{titleText}}</div>
     </div>
     <div class="bg-wrapper-fixed" v-show="bgWrapperFixedShow">
@@ -76,7 +76,12 @@
           </div>
         </div>
         <div class="pl-songs">
-          <div class="song" v-for="(song,index) in playlist.tracks" :key="index">
+          <div
+            class="song"
+            v-for="(song,index) in playlist.tracks"
+            :key="index"
+            @click="playSong(song.id)"
+          >
             <div class="index-wrapper">
               <div class="index">{{index+1}}</div>
             </div>
@@ -118,6 +123,7 @@ export default {
             left: false,
             right: false,
           },
+          click: true,
         });
         scroll.on('scroll', (pos) => {
           this.scrollY = pos.y;
@@ -129,20 +135,30 @@ export default {
   watch: {
     scrollY(newScrollY) {
       this.bgWrapperFixedShow = newScrollY <= -140;
+      this.titleText = newScrollY <= -140 ? this.playlist.name : '歌单';
 
       if (newScrollY > 0) this.titleBackgroundOpactity = 0;
       if (newScrollY < 0 && newScrollY > -140) {
         this.titleBackgroundOpactity = newScrollY / -140;
+        this.titleText = this.playlist.name;
       }
       if (newScrollY <= -140) this.titleBackgroundOpactity = 1;
     },
   },
-  methods: {},
+  methods: {
+    back() {
+      this.$router.go(-1);
+    },
+    playSong(id) {
+      this.$router.push(`/player?id=${id}`);
+    },
+  },
   filters: {
     artistsNameShow(artists) {
       const names = artists.map(el => el.name);
       return names.join('/');
     },
+
   },
 };
 </script>

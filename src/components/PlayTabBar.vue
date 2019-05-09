@@ -20,10 +20,10 @@ import { mapState } from 'vuex';
 
 export default {
   mounted() {
-    this.$store.dispatch('playlist', '24381616');
+    this.$store.dispatch('playlist', '2779453332');
   },
   computed: {
-    ...mapState(['currentSong']),
+    ...mapState(['currentSong', 'palylist']),
   },
   filters: {
     artistsToShow(artists) {

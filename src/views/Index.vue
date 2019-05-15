@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="index">
     <div class="header-wrapper">
       <div class="header">
         <div class="left-menu">
@@ -18,9 +18,8 @@
         </div>
       </div>
     </div>
-    <div class="header-wrapper-bottom"></div>
     <!-- <transition :name="transitionName"> -->
-      <router-view class="content"/>
+    <router-view class="content"/>
     <!-- </transition> -->
   </div>
 </template>
@@ -32,16 +31,8 @@ export default {
       transitionName: '',
       routes: [
         {
-          name: '我的',
-          path: '/index/mine',
-        },
-        {
           name: '发现',
           path: '/index/find',
-        },
-        {
-          name: '视频',
-          path: '/index/video',
         },
       ],
     };
@@ -62,37 +53,44 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.header-wrapper {
-  position: fixed;
-  top: 0px;
-  width: 100%;
-  background-color: #fff;
-  z-index: 1000;
+.index {
+  height: 100%;
+  padding-top: 40px;
+  box-sizing: border-box;
+  .header-wrapper {
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    background-color: #d44439;
+    color: #fff;
+    z-index: 1000;
 
-  .header {
-    margin: 10px;
-    display: flex;
-    height: 20px;
-    justify-content: space-between;
-    align-items: center;
-    .title {
-      font-size: 16px;
-      color: #868686;
-      &.active {
-        font-size: 18px;
-        color: #000;
+    .header {
+      margin: 10px;
+      display: flex;
+      height: 20px;
+      justify-content: space-between;
+      align-items: center;
+      .title {
+        font-size: 16px;
+        color: #fff;
+        &.active {
+          font-size: 18px;
+          color: #fff;
+        }
       }
-    }
-    .left-menu,
-    .right-menu {
-      .musicplayericon {
-        color: #000;
-        font-size: 20px;
+      .left-menu,
+      .right-menu {
+        .musicplayericon {
+          color: #fff;
+          font-size: 20px;
+          display: none;
+        }
       }
     }
   }
-}
-.header-wrapper-bottom {
-  height: 40px;
+  .header-wrapper-bottom {
+    height: 40px;
+  }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="player">
+  <div class="player" v-if="JSON.stringify(currentSong)!=='{}'">
     <div class="background" :style="{'background-image':`url('${currentSong.al.picUrl}')`}"></div>
     <div class="title">
       <span class="musicplayericon musicplayericon-leftarrow icon" @click="back"></span>
@@ -32,36 +32,35 @@
         <span class="totalTime time">{{currentSong.duration|durationShow}}</span>
       </div>
       <div class="control" id="controls">
-        <img src="../assets/random-btn.png" class="random-btn">
-        <img src="../assets/up-btn.png" class="up-btn">
-        <img
-          src="../assets/play-btn.png"
-          class="play-btn"
+        <span :class="['musicplayericon','playModeIcon',playModeIcon]" @click="playModeChange"></span>
+        <span class="musicplayericon musicplayericon-shangyishou" @click="upSong"></span>
+        <span
+          class="musicplayericon musicplayericon-bofang-"
           @click="play"
           v-show="!currentSong.isPlay"
-        >
-        <img
-          src="../assets/pause-btn.png"
-          class="pause-btn"
+        ></span>
+        <span
+          class="musicplayericon musicplayericon-zanting"
           @click="pause"
           v-show="currentSong.isPlay"
-        >
-        <img src="../assets/next-btn.png" class="next-btn">
-        <img src="../assets/playlist-btn.png" class="playlist-btn">
+        ></span>
+        <span class="musicplayericon musicplayericon-xiayishou" @click="nextSong"></span>
+        <span class="musicplayericon musicplayericon-bofangliebiaoicon" @click="songListShow"></span>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapMutations, mapState, mapActions } from 'vuex';
 import moment from 'moment';
 import momentDurationFormatSetup from 'moment-duration-format';
+import playMode from '../common/playMode';
+import { mutationTypes } from '../store';
 
 momentDurationFormatSetup(moment);
 
 export default {
-  props: ['id'],
   data() {
     return {
       audioPlayer: null,
@@ -70,7 +69,6 @@ export default {
   },
   mounted() {
     this.audioPlayer = document.getElementById('audio-player');
-    this.currentSongDetail(this.id);
   },
   computed: {
     percent() {
@@ -82,7 +80,19 @@ export default {
       if (percent > 1) percent = 1;
       return percent.toFixed(2);
     },
-    ...mapState(['currentSong']),
+    playModeIcon() {
+      switch (this.playMode) {
+        case playMode.SEQUENCE:
+          return 'musicplayericon-liebiaoxunhuan';
+        case playMode.LOOP:
+          return 'musicplayericon-danquxunhuan';
+        case playMode.RANDOM:
+          return 'musicplayericon-suiji';
+        default:
+          return '';
+      }
+    },
+    ...mapState(['currentSong', 'playMode']),
   },
   watch: {
     // eslint-disable-next-line func-names
@@ -148,7 +158,22 @@ export default {
         //      this.audioPlayer.currentTime = this.audioPlayer.duration * percent;
       }
     },
-    ...mapActions(['currentSongDetail']),
+    songListShow() {
+      this.$emit('songListShow');
+    },
+    playModeChange() {
+      const playModeKeys = Object.keys(playMode);
+      const index = playModeKeys.findIndex(
+        key => playMode[key] === this.playMode,
+      );
+      const nextIndex = index < playModeKeys.length - 1 ? index + 1 : 0;
+      const newPlayMode = playMode[playModeKeys[nextIndex]];
+      this.updatePlayMode(newPlayMode);
+    },
+    ...mapMutations({
+      updatePlayMode: mutationTypes.UPDATE_PLAYMODE,
+    }),
+    ...mapActions(['nextSong', 'upSong']),
   },
 
   filters: {

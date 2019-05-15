@@ -1,5 +1,5 @@
 <template>
-  <div class="playlist">
+  <div class="playlist" v-if="JSON.stringify(playlist)!=='{}'">
     <div class="title">
       <div class="background" :style="{opacity:titleBackgroundOpactity}">
         <img :src="playlist.coverImgUrl">
@@ -80,7 +80,7 @@
             class="song"
             v-for="(song,index) in playlist.tracks"
             :key="index"
-            @click="playSong(song.id)"
+            @click="songClick(song.id)"
           >
             <div class="index-wrapper">
               <div class="index">{{index+1}}</div>
@@ -98,9 +98,12 @@
 
 <script>
 import BScroll from 'better-scroll';
+import { mapActions, mapMutations } from 'vuex';
 import api from '../api';
+import { mutationTypes } from '../store';
 
 export default {
+  props: ['id'],
   data() {
     return {
       titleText: '歌单',
@@ -110,27 +113,10 @@ export default {
       titleBackgroundOpactity: 0,
     };
   },
-  props: ['id'],
-  mounted() {
-    api.playlistDetail(this.id).then((res) => {
-      this.playlist = res.data.playlist;
-      this.$nextTick(() => {
-        const scroll = new BScroll(this.$refs.scrollWrapper, {
-          probeType: 3,
-          bounce: {
-            top: true,
-            bottom: false,
-            left: false,
-            right: false,
-          },
-          click: true,
-        });
-        scroll.on('scroll', (pos) => {
-          this.scrollY = pos.y;
-        });
-      });
-    });
+  created() {
+    this.fetchData();
   },
+  mounted() {},
   computed: {},
   watch: {
     scrollY(newScrollY) {
@@ -149,16 +135,41 @@ export default {
     back() {
       this.$router.go(-1);
     },
-    playSong(id) {
-      this.$router.push(`/player?id=${id}`);
+    fetchData() {
+      api.playlistDetail(this.id).then((res) => {
+        this.playlist = res.data.playlist;
+        this.$nextTick(() => {
+          const scroll = new BScroll(this.$refs.scrollWrapper, {
+            probeType: 3,
+            bounce: {
+              top: true,
+              bottom: false,
+              left: false,
+              right: false,
+            },
+            click: true,
+          });
+          scroll.on('scroll', (pos) => {
+            this.scrollY = pos.y;
+          });
+        });
+      });
     },
+    songClick(id) {
+      this.playSong(id);
+      this.setSongList(this.playlist.tracks);
+      this.$router.push('/player');
+    },
+    ...mapActions(['playSong']),
+    ...mapMutations({
+      setSongList: mutationTypes.SET_SONGLIST,
+    }),
   },
   filters: {
     artistsNameShow(artists) {
       const names = artists.map(el => el.name);
       return names.join('/');
     },
-
   },
 };
 </script>

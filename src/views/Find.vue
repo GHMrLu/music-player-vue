@@ -8,20 +8,13 @@
         <div class="swiper-pagination" slot="pagination"></div>
       </swiper>
     </div>
-    <div class="dragonball-list">
-      <div v-for="(dragonball,index) in dragonballList" :key="index" class="dragonball">
-        <img :src="dragonball.icon" class="dragonball-icon">
-        <div class="dragonball-name">{{dragonball.name}}</div>
-      </div>
-    </div>
     <div class="palylistsRec">
       <div class="header">
         <div class="title">推荐歌单</div>
-        <div class="more-btn">歌单广场</div>
       </div>
       <div class="playlists">
         <div
-          v-for="(playlist,index) in playlistsRec"
+          v-for="(playlist,index) in playlistRec"
           :key="index"
           class="playlist"
           @click="playlistsDetail(playlist.id)"
@@ -39,67 +32,73 @@
 <script>
 import 'swiper/dist/css/swiper.css';
 import { swiper, swiperSlide } from 'vue-awesome-swiper';
-import { mapState } from 'vuex';
+import { bannerTypesUsable } from '@/common/bannerTypes';
+import { mapActions } from 'vuex';
+import api from '@/api';
 
+let vm = null;
 export default {
   data() {
     return {
       swiperOption: {
         pagination: {
           el: '.swiper-pagination',
-          clickable: true,
         },
         autoplay: true,
-        loop: true,
+        on: {
+          click() {
+            console.log(this.clickedIndex);
+            vm.selectBanner(vm.banners[this.clickedIndex]);
+          },
+        },
       },
-      dragonballList: [
-        /* eslint-disable global-require */
-        {
-          name: '每日推荐',
-          icon: require('../assets/t_dragonball_icn_daily.png'),
-        },
-        {
-          name: '歌单',
-          icon: require('../assets/t_dragonball_icn_playlist.png'),
-        },
-        {
-          name: '排行榜',
-          icon: require('../assets/t_dragonball_icn_rank.png'),
-        },
-        {
-          name: '电台',
-          icon: require('../assets/t_dragonball_icn_radio.png'),
-        },
-        {
-          name: '直播',
-          icon: require('../assets/t_dragonball_icn_look.png'),
-        },
-      ],
+      banners: [],
+      playlistRec: [],
     };
   },
-  mounted() {
-    this.$store.dispatch('find');
+  created() {
+    vm = this;
+    this.getBanner();
+    this.getPlaylistRec();
   },
+  mounted() {},
   methods: {
+    getBanner() {
+      api.banner().then((res) => {
+        const banners = res.data.banners.filter(el => bannerTypesUsable.includes(el.targetType));
+        this.banners = banners;
+      });
+    },
+    getPlaylistRec() {
+      api.playlistRec().then((res) => {
+        this.playlistRec = res.data.result;
+      });
+    },
     playlistsDetail(id) {
       this.$router.push(`/playlist?id=${id}`);
     },
+    selectBanner(banner) {
+      if (banner.targetType === 1 || banner.targetType === 2004) {
+        this.playSong(banner.targetId);
+      }
+      if (banner.targetType === 1e3 || banner.targetType === 2003) {
+        this.$router.push(`/playlist?id=${banner.targetId}`);
+      }
+    },
+    ...mapActions(['playSong']),
   },
   components: {
     swiper,
     swiperSlide,
   },
-  computed: {
-    playlistsRec() {
-      return this.$store.state.playlistsRec.slice(0, 12);
-    },
-    ...mapState(['banners']),
-  },
+  computed: {},
 };
 </script>
 
 <style lang="less" scoped>
 #find {
+  height: 100%;
+  overflow: auto;
   .swiper-wrap {
     padding: 10px 10px 10px 10px;
   }
@@ -113,32 +112,8 @@ export default {
     }
   }
 
-  .dragonball-list {
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    .dragonball {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      font-size: 12px;
-      .dragonball-icon {
-        //background-color: #ff3627;
-        background: linear-gradient(to right, #ff6847, #ff3f36);
-        border-radius: 45px;
-        height: 45px;
-        width: 45px;
-      }
-      .dragonball-name {
-        padding-top: 8px;
-        color: #333333;
-      }
-    }
-  }
-
   .palylistsRec {
-    padding: 20px 10px 10px 10px;
+    padding: 10px 10px 10px 10px;
     .header {
       padding: 10px 0px 10px 0px;
       display: flex;

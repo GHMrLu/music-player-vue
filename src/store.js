@@ -1,35 +1,35 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import api from './api';
+import playMode from './common/playMode';
+import { shuffle } from './common/util';
 
 Vue.use(Vuex);
 
-// mutation types
-const SET_FIND = 'SET_FIND';
-const SET_PLAYLIST = 'SET_PLAYLIST';
-const INIT_SONG = 'INIT_SONG';
-const UPDATE_SONG = 'UPDATE_SONG';
+export const mutationTypes = {
+  SET_FIND: 'SET_FIND',
+  SET_SONGLIST: 'SET_SONGLIST',
+  INIT_SONG: 'INIT_SONG',
+  UPDATE_SONG: 'UPDATE_SONG',
+  UPDATE_PLAYMODE: 'UPDATE_PLAYMODE',
+};
 
 export default new Vuex.Store({
   state: {
     currentSong: {},
-    palylist: {
-      playType: '',
-      songs: [],
-    },
+    songList: [],
+    songListPlay: [], // 歌曲的播放顺序
+    playMode: playMode.SEQUENCE,
     banners: [],
     playlistsRec: [],
   },
   mutations: {
     /* eslint-disable no-param-reassign */
-    [SET_FIND](state, data) {
+    [mutationTypes.SET_FIND](state, data) {
       state.banners = data.banners;
       state.playlistsRec = data.playlistsRec;
     },
-    [SET_PLAYLIST](state, data) {
-      state.palylist = data;
-    },
-    [INIT_SONG](state, data) {
+    [mutationTypes.INIT_SONG](state, data) {
       const currentSong = {
         isPlay: false,
         duration: 0,
@@ -37,33 +37,57 @@ export default new Vuex.Store({
       };
       state.currentSong = { ...currentSong, ...data };
     },
-    [UPDATE_SONG](state, data) {
+    [mutationTypes.UPDATE_SONG](state, data) {
       state.currentSong = { ...state.currentSong, ...data };
+    },
+    [mutationTypes.SET_SONGLIST](state, data) {
+      state.songList = data;
+      if (state.playMode === playMode.SEQUENCE) state.songListPlay = state.songList;
+      if (state.playMode === playMode.RANDOM) state.songListPlay = shuffle(state.songList);
+    },
+    [mutationTypes.UPDATE_PLAYMODE](state, data) {
+      state.playMode = data;
+      if (state.playMode === playMode.SEQUENCE) state.songListPlay = state.songList;
+      if (state.playMode === playMode.RANDOM) state.songListPlay = shuffle(state.songList);
     },
   },
   actions: {
     find({ commit }) {
       api.find().then((res) => {
-        console.log(res);
-
         const { banners } = res.banner.data;
         const playlistsRec = res.playlistRec.data.result;
-        // const { banner, playListRec } = res;
-        commit(SET_FIND, { banners, playlistsRec });
+        commit(mutationTypes.SET_FIND, { banners, playlistsRec });
       });
     },
     playlist({ commit }, id) {
       api.playlistDetail(id).then((res) => {
-        commit(SET_PLAYLIST, res.data);
+        commit(mutationTypes.SET_PLAYLIST, res.data);
       });
     },
-    currentSongDetail({ commit, state }, id) {
-      Promise.all([api.songsDetail(id), api.songsUrl(id)]).then(([songsDetail, songsUrl]) => {
-        const [part1] = songsDetail.data.songs;
-        const [part2] = songsUrl.data.data;
-        const currentSong = { ...state.currentSong, ...part1, ...part2 };
-        commit(INIT_SONG, currentSong);
-      });
+    playSong({
+      commit, state,
+    }, songId) {
+      Promise.all([
+        api.songsDetail(songId),
+        api.songsUrl(songId)])
+        .then(([songsDetail, songsUrl]) => {
+          const [part1] = songsDetail.data.songs;
+          const [part2] = songsUrl.data.data;
+          const currentSong = { ...state.currentSong, ...part1, ...part2 };
+          commit(mutationTypes.INIT_SONG, currentSong);
+        });
+    },
+    nextSong({ dispatch, state }) {
+      const { currentSong, songListPlay } = state;
+      const index = songListPlay.findIndex(song => song.id === currentSong.id);
+      const nextIndex = index < songListPlay.length - 1 ? index + 1 : 0;
+      dispatch('playSong', songListPlay[nextIndex].id);
+    },
+    upSong({ dispatch, state }) {
+      const { currentSong, songListPlay } = state;
+      const index = songListPlay.findIndex(song => song.id === currentSong.id);
+      const nextIndex = index === 0 ? songListPlay.length - 1 : index - 1;
+      dispatch('playSong', songListPlay[nextIndex].id);
     },
   },
 });
